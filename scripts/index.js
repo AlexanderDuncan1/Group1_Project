@@ -1,15 +1,16 @@
-const clientId = "07574a44bbef47ad9c5b4949cf020c29";
-const redirectUri = "https://alexanderduncan1.github.io/Group1_Project/";
-const clientSecret = "3a121714103f4ebbbe8a1d88a0e5fa8c";
+const clientId = "456f6a4204b744b0ad0bbc9b05bec3b3";
+const redirectUri = "https://mwangir.github.io/Group1_Project/";
+const clientSecret = "518ad5850c434ad3aca350a5e92fbf46";
 
 let useTheseArtists = undefined;
+//change
 
 // Function to handle user authentication and authorization
 function authenticate() {
   const state = generateRandomString(16);
   localStorage.setItem("spotify_auth_state", state);
 
-  const scope = "playlist-read-private playlist-read-collaborative user-library-read"; // Add the required scopes here                            
+  const scope = "playlist-read-private playlist-read-collaborative user-library-read"; // Add the required scopes here
 
   const authorizeUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectUri,
@@ -84,6 +85,49 @@ function getUserPlaylists(accessToken) {
       // Response contains the user's playlists
       const playlists = data.items;
       const allArtists = [];
+
+      for (const playlist of playlists) {
+        const playlistName = playlist.name;
+        console.log("This are playlist nammes", playlistName);
+
+        // const playlistNameEL = document.createElement("h2");
+        // playlistNameEL.textContent = playlistName;
+        // document.querySelector(".playlistName").append(playlistNameEL);
+
+        // Extract artists from each playlist
+        const playlistId = playlist.id;
+        const playlistArtist = [];
+
+        fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            // Extract artists from each track in the playlist
+            // console.log("this is items", items);
+            // const artists = items.flatMap((track) =>
+            //   track.track.artists.map((artist) => artist.name),
+            // );
+            // console.log("Artists in Playlist:", artists);
+            // console.log("-------------------------------");
+            // if (!Array.isArray(artists)) throw new Error("Expected an Array");
+            // playlistArtist.push(...artists);
+            console.log("This is data", data);
+            const items = data.items;
+            const artistNames = [];
+            console.log("This is items", items);
+            for (const item of items) {
+              const artists = item.track.artists;
+              for (const artist of artists) {
+                const artistName = artist.name;
+                artistNames.push(artistName);
+              }
+              console.log("This is artistNames----------------", artistNames);
+            }
+          });
+      }
 
       // Iterate over each playlist
       const fetchPromises = playlists.map((playlist) => {
